@@ -25,6 +25,10 @@
         ,get_mapping/1
         ,get_mapping/2
         ,get_mapping/3
+        ,put_ilm_policy/2
+        ,put_ilm_policy/3
+        ,explain_ilm_policy/1
+        ,explain_ilm_policy/2
         ,get_settings/0
         ,get_settings/1
         ,get_settings/2
@@ -258,6 +262,40 @@ get_mapping(Index, Type) when is_binary(Index), is_binary(Type) ->
 -spec get_mapping(#erls_params{}, binary(), binary()) -> {ok, erlastic_success_result()} | {error, any()}.
 get_mapping(#erls_params{} = Params, Index, Type) when is_binary(Index), is_binary(Type) ->
     erls_resource:get(Params, filename:join([Index, <<"_mapping">>, Type]), [], [], [], Params#erls_params.http_client_options).
+
+
+%%--------------------------------------------------------------------
+%% @doc
+%% Put ilm policy
+%% @end
+%%--------------------------------------------------------------------
+
+put_ilm_policy(Name, Policy)
+  when is_binary(Name) ->
+    put_ilm_policy(#erls_params{}, Name, Policy).
+
+put_ilm_policy(#erls_params{} = Params, Name, Policy)
+  when is_binary(Name) ->
+    Path = filename:join([<<"_ilm">>, <<"policy">>, Name]),
+    Options = Params#erls_params.http_client_options,
+    Body = maybe_encode_doc(Policy),
+    erls_resource:put(Params, Path, _Headers=[], _Params=[], Body, Options).
+
+%%--------------------------------------------------------------------
+%% @doc
+%% Explain ilm policy
+%% @end
+%%--------------------------------------------------------------------
+
+explain_ilm_policy(Index)
+  when is_binary(Index) ->
+    explain_ilm_policy(#erls_params{}, Index).
+
+explain_ilm_policy(#erls_params{} = Params, Index)
+  when is_binary(Index) ->
+    Path = filename:join([Index, <<"_ilm">>, <<"explain">>]),
+    Options = Params#erls_params.http_client_options,
+    erls_resource:get(Params, Path, _Headers=[], _Params=[], Options).
 
 %%--------------------------------------------------------------------
 %% @doc
