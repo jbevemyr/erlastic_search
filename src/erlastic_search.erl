@@ -125,21 +125,34 @@ create_index(Index) ->
 %% (see the doc at https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-create-index.html)
 %% @end
 %%--------------------------------------------------------------------
--spec create_index(#erls_params{}, binary()) -> {ok, erlastic_success_result()} | {error, any()}.
+-spec create_index(#erls_params{}, binary()) ->
+                          {ok, erlastic_success_result()} | {error, any()};
+                  (binary(), erlastic_json() | binary()) ->
+                          {ok, erlastic_success_result()} | {error, any()}.
 create_index(#erls_params{} = Params, Index) when is_binary(Index) ->
     create_index(Params, Index, <<>>);
-create_index(Index, Doc) when is_binary(Index), (is_binary(Doc) orelse is_list(Doc) orelse is_tuple(Doc) orelse is_map(Doc)) ->
+create_index(Index, Doc) when
+      is_binary(Index),
+      (is_binary(Doc) orelse
+       is_list(Doc) orelse
+       is_tuple(Doc) orelse
+       is_map(Doc)) ->
     create_index(#erls_params{}, Index, Doc).
 
 %%--------------------------------------------------------------------
 %% @doc
-%% Takes a record describing the servers details, an index name, and a request body, and creates that index
-%% (see the doc at https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-create-index.html)
+%% Takes a record describing the servers details, an index name,
+%% and a request body, and creates that index (see the doc at
+%% https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-create-index.html)
 %% @end
-%%--------------------------------------------------------------------
--spec create_index(#erls_params{}, binary(), erlastic_json() | binary()) -> {ok, erlastic_success_result()} | {error, any()}.
-create_index(Params, Index, Doc) when is_binary(Index), (is_binary(Doc) orelse is_list(Doc) orelse is_tuple(Doc) orelse is_map(Doc)) ->
-    erls_resource:put(Params, Index, [], [], maybe_encode_doc(Doc), Params#erls_params.http_client_options).
+%% --------------------------------------------------------------------
+-spec create_index(#erls_params{}, binary(), erlastic_json() | binary()) ->
+                          {ok, erlastic_success_result()} | {error, any()}.
+create_index(Params, Index, Doc) when is_binary(Index),
+                                      (is_binary(Doc) orelse is_list(Doc) orelse
+                                       is_tuple(Doc) orelse is_map(Doc)) ->
+    erls_resource:put(Params, Index, [], [], maybe_encode_doc(Doc),
+                      Params#erls_params.http_client_options).
 
 %%--------------------------------------------------------------------
 %% @doc
